@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-4" style="background: #0b1329; min-height: 100vh; color: #f8fafc;">
+    
+    <!-- Üst Başlık Kartı: Premium Teknoloji Teması -->
+    <div class="card mb-4 shadow-lg" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px;">
+        <div class="card-body p-5 d-flex align-items-center justify-content-between">
+            <div>
+                <h1 class="display-5 fw-bold text-white mb-2">GATİM Sistem Özeti</h1>
+                <p class="fs-5 text-cyan-400 d-flex align-items-center flex-wrap gap-2" style="color: #38bdf8; margin: 0;">
+                    Hoş geldiniz, <strong class="text-white fs-4" style="text-shadow: 0 0 12px rgba(56, 189, 248, 0.4);">{{ current_user.username }}</strong>
+                    <span class="badge bg-primary px-3 py-2 fs-6 rounded-pill" style="text-transform: uppercase;">{{ current_user.role }}</span>
+                    <span class="badge px-3 py-2 fs-6 rounded-pill" style="background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); color: #ffffff; font-weight: 700; box-shadow: 0 0 15px rgba(6, 182, 212, 0.5); border: 1px solid rgba(255, 255, 255, 0.2);">ELITE STATUS</span>
+                </p>
+            </div>
+            <div class="d-none d-lg-block">
+                <i class="bi bi-cpu text-info" style="font-size: 4.5rem; color: #06b6d4 !important;"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2 Sütunlu Grid Yapısı -->
+    <div class="row g-4">
+        <!-- Sol Sütun: Gelişmiş Metrik Kartları -->
+        <div class="col-lg-7">
+            <div class="row g-4">
+                <!-- Toplam Malzeme -->
+                <div class="col-md-6">
+                    <div class="card h-100 shadow" style="background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 12px;">
+                        <div class="card-body p-4 d-flex align-items-center">
+                            <div class="p-3 rounded-3 me-3" style="background: rgba(14, 165, 233, 0.15);"><i class="bi bi-box-seam text-info fs-2" style="color: #38bdf8;"></i></div>
+                            <div>
+                                <h6 class="text-uppercase fw-semibold mb-1" style="color: #94a3b8; letter-spacing: 0.5px;">Toplam Malzeme</h6>
+                                <h2 class="display-6 fw-bold text-white m-0">{{ total_items }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kritik Stok Uyarısı (Parlayan Efektli) -->
+                <div class="col-md-6">
+                    <div class="card h-100 shadow{% if critical_items_count > 0 %} animate-pulse{% endif %}" style="background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: {% if critical_items_count > 0 %}2px solid #ef4444{% else %}1px solid rgba(255, 255, 255, 0.1){% endif %}; border-radius: 12px; {% if critical_items_count > 0 %}box-shadow: 0 0 15px rgba(239, 68, 68, 0.15);{% endif %}">
+                        <div class="card-body p-4 d-flex align-items-center">
+                            <div class="p-3 rounded-3 me-3" style="background: {% if critical_items_count > 0 %}rgba(239, 68, 68, 0.15){% else %}rgba(255, 255, 255, 0.05){% endif %};"><i class="bi bi-exclamation-triangle-fill {% if critical_items_count > 0 %}text-danger{% else %}text-muted{% endif %} fs-2" style="{% if critical_items_count > 0 %}color: #f87171;{% endif %}"></i></div>
+                            <div>
+                                <h6 class="text-uppercase fw-semibold mb-1" style="color: {% if critical_items_count > 0 %}#f87171{% else %}#94a3b8{% endif %}; letter-spacing: 0.5px;">Kritik Stok Uyarısı</h6>
+                                <h2 class="display-6 fw-bold text-white m-0 d-flex align-items-center">
+                                    {{ critical_items_count }}
+                                    {% if critical_items_count > 0 %}
+                                    <span class="spinner-grow spinner-grow-sm text-danger ms-2" role="status"></span>
+                                    {% endif %}
+                                </h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Onaylanan Talepler -->
+                <div class="col-md-6">
+                    <div class="card h-100 shadow" style="background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px;">
+                        <div class="card-body p-4 d-flex align-items-center">
+                            <div class="p-3 rounded-3 me-3" style="background: rgba(16, 185, 129, 0.15);"><i class="bi bi-clipboard-check-fill text-success fs-2" style="color: #34d399;"></i></div>
+                            <div>
+                                <h6 class="text-uppercase fw-semibold mb-1" style="color: #94a3b8; letter-spacing: 0.5px;">Onaylanan Talepler</h6>
+                                <h2 class="display-6 fw-bold text-white m-0">{{ approved_requests }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bekleyen Talepler -->
+                <div class="col-md-6">
+                    <div class="card h-100 shadow" style="background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px;">
+                        <div class="card-body p-4 d-flex align-items-center">
+                            <div class="p-3 rounded-3 me-3" style="background: rgba(245, 158, 11, 0.15);"><i class="bi bi-clock-history text-warning fs-2" style="color: #fbbf24;"></i></div>
+                            <div>
+                                <h6 class="text-uppercase fw-semibold mb-1" style="color: #94a3b8; letter-spacing: 0.5px;">Bekleyen Talepler</h6>
+                                <h2 class="display-6 fw-bold text-white m-0">{{ pending_requests }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sağ Sütun: Canlı Sistem Aktivite Günlüğü (Timeline) -->
+        <div class="col-lg-5">
+            <div class="card h-100 shadow" style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px;">
+                <div class="card-header bg-transparent border-secondary py-3">
+                    <h5 class="m-0 fw-bold text-info d-flex align-items-center" style="color: #22d3ee;"><i class="bi bi-shield-activity me-2"></i> GATİM Canlı Sistem Aktivite Günlüğü</h5>
+                </div>
+                <div class="card-body" style="max-height: 380px; overflow-y: auto;">
+                    <!-- Dinamik Sistem Aktivite Günlüğü -->
+                    {% for log in logs %}
+                    <div class="d-flex mb-3 border-start {% if log.status_to == 'pending' %}border-warning{% elif log.status_to == 'approved' %}border-success{% elif log.status_to == 'delivered' %}border-info{% else %}border-danger{% endif %} ps-3 position-relative">
+                        <div class="position-absolute rounded-circle {% if log.status_to == 'pending' %}bg-warning{% elif log.status_to == 'approved' %}bg-success{% elif log.status_to == 'delivered' %}bg-info{% else %}bg-danger{% endif %}" style="width: 10px; height: 10px; left: -5px; top: 6px;"></div>
+                        <div>
+                            <span class="badge {% if log.status_to == 'pending' %}bg-warning text-dark{% elif log.status_to == 'approved' %}bg-success{% elif log.status_to == 'delivered' %}bg-info text-dark{% else %}bg-danger{% endif %} mb-1">
+                                {% if log.status_to == 'pending' %}Yeni Talep{% elif log.status_to == 'approved' %}Onaylandı{% elif log.status_to == 'delivered' %}Teslim Edildi{% else %}Reddedildi{% endif %}
+                            </span>
+                            <p class="mb-0 text-slate-200" style="font-size: 0.95rem;">
+                                {% if log.status_to == 'pending' %}
+                                    <strong>{{ log.request.requester.username }}</strong>, {{ log.request.quantity }} adet <strong>{{ log.request.item.name }}</strong> talep etti.
+                                {% elif log.status_to == 'approved' %}
+                                    <strong>{{ log.changed_by.username }}</strong>, <strong>{{ log.request.requester.username }}</strong> kullanıcısının {{ log.request.quantity }} adet <strong>{{ log.request.item.name }}</strong> talebini onayladı.
+                                {% elif log.status_to == 'delivered' %}
+                                    <strong>{{ log.changed_by.username }}</strong>, <strong>{{ log.request.requester.username }}</strong> kullanıcısının {{ log.request.quantity }} adet <strong>{{ log.request.item.name }}</strong> talebini teslim etti.
+                                {% else %}
+                                    <strong>{{ log.changed_by.username }}</strong>, <strong>{{ log.request.requester.username }}</strong> kullanıcısının {{ log.request.quantity }} adet <strong>{{ log.request.item.name }}</strong> talebini reddetti.
+                                {% endif %}
+                                {% if log.remarks %}
+                                    <span class="d-block small text-muted mt-1" style="font-style: italic;">Açıklama: {{ log.remarks }}</span>
+                                {% endif %}
+                            </p>
+                            <small class="text-muted" style="color: #64748b;">{{ log.timestamp.strftime('%H:%M - %d.%m.%Y') }}</small>
+                        </div>
+                    </div>
+                    {% else %}
+                    <!-- Eğer dinamik loglar boşsa gösterilecek şık empty state alanı -->
+                    <div class="text-center text-muted py-4 mt-3 border border-dashed rounded" style="border-color: rgba(255,255,255,0.1) !important;">
+                        <i class="bi bi-database-check fs-1 text-muted opacity-50"></i>
+                        <p class="m-0 mt-2" style="font-size: 0.9rem;">Sistem aktivite günlüğü boş. Yeni talep hareketleri bekleniyor.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

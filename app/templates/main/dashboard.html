@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-4" style="background: #0b1329; min-height: 100vh; color: #f8fafc; border-radius: 16px;">
+    
+    <!-- Top Header Card: Premium Technology Theme -->
+    <div class="card mb-4 shadow-lg" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px;">
+        <div class="card-body p-5 d-flex align-items-center justify-content-between">
+            <div>
+                <h1 class="display-5 fw-bold text-white mb-2 brand-font">GATİM Sistem Özeti</h1>
+                <p class="fs-5 text-cyan-400 mb-0">Hoş geldiniz, <strong class="text-white">{{ current_user.username }}</strong>. Rol yetkiniz: <span class="user-role-badge ms-2">{{ current_user.role }}</span></p>
+            </div>
+            <div class="d-none d-lg-block">
+                <i class="bi bi-cpu text-info" style="font-size: 4.5rem; color: #06b6d4 !important;"></i>
+            </div>
+        </div>
+    </div>
+
+    {% if critical_items_count > 0 %}
+    <div class="alert alert-danger d-flex align-items-center border-danger border-opacity-25 text-light mb-4 shadow" style="background: rgba(239, 68, 68, 0.15); backdrop-filter: blur(12px); border-radius: 12px;" role="alert">
+        <span class="status-dot animate-pulse me-2" style="background-color: #ef4444; width: 8px; height: 8px; border-radius: 50%; display: inline-block; box-shadow: 0 0 8px #ef4444;"></span>
+        <div>
+            <strong class="text-rose-400">Kritik Stok Uyarısı:</strong> Sistemde kritik stok seviyesinin altında envanter kalemi bulunmaktadır!
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- 2-Column Grid Layout -->
+    <div class="row g-4">
+        <!-- Left Column: Advanced Metric Cards & Quick Actions -->
+        <div class="col-lg-7">
+            <div class="row g-4">
+                <!-- Total Items -->
+                <div class="col-md-6">
+                    <div class="card h-100 shadow glass-card" style="background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px;">
+                        <div class="card-body p-4 d-flex align-items-center">
+                            <div class="p-3 rounded-3 me-3" style="background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.25);"><i class="bi bi-box-seam text-cyan-400 fs-2"></i></div>
+                            <div>
+                                <h6 class="text-uppercase fw-semibold mb-1 text-cyan-400" style="letter-spacing: 0.5px; font-size: 0.75rem;">Toplam Malzeme</h6>
+                                <h2 class="display-6 fw-bold text-slate-100 m-0">{{ total_items }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Critical Stock Alert (With Glowing/Pulsing Animation) -->
+                <div class="col-md-6">
+                    <div class="card h-100 shadow {% if critical_items_count > 0 %}pulse-critical{% endif %}" style="background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(12px); border: 2px solid {% if critical_items_count > 0 %}#ef4444{% else %}rgba(255, 255, 255, 0.1){% endif %}; border-radius: 12px; {% if critical_items_count > 0 %}box-shadow: 0 0 15px rgba(239, 68, 68, 0.25);{% endif %}">
+                        <div class="card-body p-4 d-flex align-items-center">
+                            <div class="p-3 rounded-3 me-3" style="background: {% if critical_items_count > 0 %}rgba(239, 68, 68, 0.15){% else %}rgba(16, 185, 129, 0.15){% endif %}; border: 1px solid {% if critical_items_count > 0 %}rgba(239, 68, 68, 0.25){% else %}rgba(16, 185, 129, 0.25){% endif %};">
+                                <i class="bi bi-exclamation-triangle {% if critical_items_count > 0 %}text-gradient-rose{% else %}text-success{% endif %} fs-2"></i>
+                            </div>
+                            <div>
+                                <h6 class="text-uppercase fw-semibold mb-1 {% if critical_items_count > 0 %}text-rose-400{% else %}text-success{% endif %}" style="letter-spacing: 0.5px; font-size: 0.75rem;">Kritik Stok Uyarısı</h6>
+                                <h2 class="display-6 fw-bold text-slate-100 m-0 d-flex align-items-center">
+                                    {% if critical_items_count > 0 %}
+                                        <span class="status-dot animate-pulse me-2" style="background-color: #ef4444; width: 12px; height: 12px; border-radius: 50%; display: inline-block; box-shadow: 0 0 8px #ef4444;"></span>
+                                    {% endif %}
+                                    {{ critical_items_count }}
+                                </h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Requests -->
+                <div class="col-md-6">
+                    <div class="card h-100 shadow glass-card" style="background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px;">
+                        <div class="card-body p-4 d-flex align-items-center">
+                            <div class="p-3 rounded-3 me-3" style="background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.25);"><i class="bi bi-file-earmark-text text-primary fs-2" style="color: #6366f1 !important;"></i></div>
+                            <div>
+                                <h6 class="text-uppercase fw-semibold mb-1 text-cyan-400" style="letter-spacing: 0.5px; font-size: 0.75rem;">Toplam Talep</h6>
+                                <h2 class="display-6 fw-bold text-slate-100 m-0">{{ total_requests }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pending Requests -->
+                <div class="col-md-6">
+                    <div class="card h-100 shadow glass-card" style="background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px;">
+                        <div class="card-body p-4 d-flex align-items-center">
+                            <div class="p-3 rounded-3 me-3" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.25);"><i class="bi bi-hourglass-split text-warning fs-2"></i></div>
+                            <div>
+                                <h6 class="text-uppercase fw-semibold mb-1 text-amber-400" style="letter-spacing: 0.5px; font-size: 0.75rem;">Bekleyen Talep</h6>
+                                <h2 class="display-6 fw-bold text-slate-100 m-0">{{ pending_requests }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fast Actions Section directly below the metrics in Left Column -->
+            <div class="card mt-4 shadow" style="background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px;">
+                <div class="card-body p-4">
+                    <h5 class="brand-font mb-4 text-slate-100 d-flex align-items-center">
+                        <i class="bi bi-lightning-charge text-amber-400 me-2 fs-4"></i> Hızlı İşlemler
+                    </h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <a href="{{ url_for('inventory.index') }}" class="btn btn-outline-info text-start p-3 sidebar-nav-link d-flex align-items-center border-secondary border-opacity-30 w-100 h-100">
+                                <i class="bi bi-plus-circle fs-4 text-cyan-400 me-3"></i>
+                                <div>
+                                    <span class="d-block fw-bold text-slate-100">Hızlı Talep Oluştur</span>
+                                    <span class="text-slate-300 small" style="font-size: 0.75rem;">Envanterden malzeme seçip talep edin</span>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{{ url_for('inventory.index', stock_status='critical') }}" class="btn btn-outline-info text-start p-3 sidebar-nav-link d-flex align-items-center border-secondary border-opacity-30 w-100 h-100">
+                                <i class="bi bi-exclamation-octagon fs-4 text-rose-400 me-3"></i>
+                                <div>
+                                    <span class="d-block fw-bold text-slate-100">Kritik Stokları Filtrele</span>
+                                    <span class="text-slate-300 small" style="font-size: 0.75rem;">Seviyesi yetersiz malzemeleri inceleyin</span>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{{ url_for('requests.my_requests') }}" class="btn btn-outline-info text-start p-3 sidebar-nav-link d-flex align-items-center border-secondary border-opacity-30 w-100 h-100">
+                                <i class="bi bi-clipboard-data fs-4 text-cyan-400 me-3"></i>
+                                <div>
+                                    <span class="d-block fw-bold text-slate-100">Taleplerimi İnceleyin</span>
+                                    <span class="text-slate-300 small" style="font-size: 0.75rem;">Talep durumlarını ve geçmişini sorgulayın</span>
+                                </div>
+                            </a>
+                        </div>
+                        {% if current_user.role in ['admin', 'inventory_manager'] %}
+                        <div class="col-md-6">
+                            <a href="{{ url_for('requests.all_requests') }}" class="btn btn-outline-info text-start p-3 sidebar-nav-link d-flex align-items-center border-secondary border-opacity-30 w-100 h-100">
+                                <i class="bi bi-shield-lock fs-4 text-cyan-400 me-3"></i>
+                                <div>
+                                    <span class="d-block fw-bold text-slate-100">Talepleri Yönetin (Admin)</span>
+                                    <span class="text-slate-300 small" style="font-size: 0.75rem;">Personel taleplerini onaylayın veya teslim edin</span>
+                                </div>
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Live Audit Timeline -->
+        <div class="col-lg-5">
+            <div class="card shadow h-100" style="background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px;">
+                <div class="card-body p-4 d-flex flex-column" style="max-height: 600px;">
+                    <h5 class="brand-font mb-4 text-slate-100 d-flex align-items-center pb-2 border-bottom border-secondary border-opacity-20">
+                        <i class="bi bi-activity text-cyan-400 me-2 fs-4"></i> GATİM CANLI SİSTEM AKTİVİTE GÜNLÜĞÜ
+                    </h5>
+                    <div class="timeline-container pe-2 flex-grow-1" style="overflow-y: auto; max-height: 480px;">
+                        {% if logs %}
+                            {% for log in logs %}
+                                <div class="timeline-item">
+                                    <div class="timeline-icon">
+                                        {% if log.status_to == 'approved' %}
+                                            <i class="bi bi-check-circle-fill text-success"></i>
+                                        {% elif log.status_to == 'delivered' %}
+                                            <i class="bi bi-truck text-cyan-400"></i>
+                                        {% elif log.status_to == 'rejected' %}
+                                            <i class="bi bi-x-circle-fill text-danger"></i>
+                                        {% elif log.status_to == 'pending' %}
+                                            <i class="bi bi-hourglass-split text-warning"></i>
+                                        {% else %}
+                                            <i class="bi bi-shield text-info"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div class="timeline-content">
+                                        <div class="d-flex w-100 justify-content-between align-items-center mb-1">
+                                            <div>
+                                                <span class="badge bg-secondary bg-opacity-20 text-cyan-400 border border-secondary border-opacity-35 me-2 small" style="font-size: 0.7rem;">
+                                                    Talep #{{ log.request_id }}
+                                                </span>
+                                                <strong class="text-slate-100 small">{{ log.changed_by.username }}</strong>
+                                            </div>
+                                            <small class="text-cyan-400 font-monospace" style="font-size: 0.7rem;">
+                                                {{ log.timestamp.strftime('%d.%m.%Y %H:%M') }}
+                                            </small>
+                                        </div>
+                                        <div class="mt-2 d-flex align-items-center gap-2">
+                                            <span class="small text-slate-300" style="font-size: 0.75rem;">Durum Değişimi:</span>
+                                            {% if log.status_from %}
+                                                <span class="status-badge status-{{ log.status_from }}" style="font-size: 0.6rem; padding: 0.15rem 0.4rem;">
+                                                    {{ log.status_from }}
+                                                </span>
+                                                <i class="bi bi-arrow-right text-slate-300 small" style="font-size: 0.65rem;"></i>
+                                            {% endif %}
+                                            <span class="status-badge status-{{ log.status_to }}" style="font-size: 0.6rem; padding: 0.15rem 0.4rem;">
+                                                {{ log.status_to }}
+                                            </span>
+                                        </div>
+                                        {% if log.remarks %}
+                                            <p class="text-slate-300 small mb-0 mt-2 p-2 rounded bg-dark bg-opacity-20 border border-secondary border-opacity-10" style="font-size: 0.75rem; font-style: italic;">
+                                                "{{ log.remarks }}"
+                                            </p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-5 text-cyan-400">
+                                <i class="bi bi-journal-x fs-1 mb-2 d-block"></i>
+                                Henüz bir sistem işlem logu bulunmuyor.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Taleplerim{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="brand-font mb-1">Taleplerim</h1>
+        <p class="text-muted mb-0">Malzeme talep geçmişiniz ve güncel onay durumları.</p>
+    </div>
+    <a href="{{ url_for('inventory.index') }}" class="btn btn-secondary border-0" style="background: var(--secondary-gradient);">
+        <i class="bi bi-search me-1"></i> Yeni Talep Oluştur
+    </a>
+</div>
+
+<div class="glass-card overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-dark table-hover mb-0 align-middle">
+            <thead class="table-group-divider border-secondary">
+                <tr>
+                    <th scope="col" class="ps-4">Tarih</th>
+                    <th scope="col">Malzeme</th>
+                    <th scope="col" class="text-center">Miktar</th>
+                    <th scope="col" class="text-center">Durum</th>
+                    <th scope="col">Son İşlem Açıklaması</th>
+                    <th scope="col" class="text-end pe-4">İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if requests %}
+                    {% for req in requests %}
+                        <tr>
+                            <td class="ps-4 small text-muted">{{ req.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                            <td class="fw-medium text-white">
+                                <a href="{{ url_for('inventory.detail', item_id=req.item.id) }}" class="text-info text-decoration-none">
+                                    {{ req.item.name }}
+                                </a>
+                                <div class="small text-muted font-monospace">{{ req.item.sku }}</div>
+                            </td>
+                            <td class="text-center fw-bold">{{ req.quantity }}</td>
+                            <td class="text-center">
+                                {% if req.status == 'pending' %}
+                                    <span class="status-badge status-pending">
+                                        <span class="status-dot"></span>Onay Bekliyor
+                                    </span>
+                                {% elif req.status == 'approved' %}
+                                    <span class="status-badge status-approved">
+                                        <span class="status-dot"></span>Onaylandı
+                                    </span>
+                                {% elif req.status == 'delivered' %}
+                                    <span class="status-badge status-delivered">
+                                        <span class="status-dot"></span>Teslim Edildi
+                                    </span>
+                                {% else %}
+                                    <span class="status-badge status-rejected">
+                                        <span class="status-dot"></span>Reddedildi
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if req.logs %}
+                                    <span class="text-muted small">{{ req.logs[-1].remarks or '' }}</span>
+                                {% else %}
+                                    <span class="text-muted small">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end pe-4">
+                                {% if req.status == 'pending' %}
+                                    <form method="POST" action="{{ url_for('requests.cancel', req_id=req.id) }}" class="d-inline" onsubmit="return confirm('Bu talebi iptal etmek istediğinize emin misiniz?');">
+                                        <!-- Add CSRF protection token -->
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="bi bi-x-circle"></i> İptal Et
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <span class="text-muted small">-</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            <i class="bi bi-file-earmark-text fs-1 mb-2 d-block"></i>
+                            Henüz kayıtlı bir talebiniz bulunmuyor.
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

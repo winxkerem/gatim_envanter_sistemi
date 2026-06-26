@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}Tüm Talepler{% endblock %}
+{% block content %}
+<div class="mb-4">
+    <h1 class="brand-font mb-1">Talep Yönetimi</h1>
+    <p class="text-muted mb-0">Sistemdeki tüm personel malzeme talepleri ve onay/teslimat süreçleri.</p>
+</div>
+
+<div class="glass-card overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-dark table-hover mb-0 align-middle">
+            <thead class="table-group-divider border-secondary">
+                <tr>
+                    <th scope="col" class="ps-4">Tarih</th>
+                    <th scope="col">Personel</th>
+                    <th scope="col">Malzeme</th>
+                    <th scope="col" class="text-center">Talep / Stok</th>
+                    <th scope="col" class="text-center">Durum</th>
+                    <th scope="col" class="text-end pe-4">İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if requests %}
+                    {% for req in requests %}
+                        <tr>
+                            <td class="ps-4 small text-muted">{{ req.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                            <td>
+                                <span class="fw-medium text-white d-block">{{ req.requester.username }}</span>
+                                <span class="text-muted small">{{ req.requester.department.name if req.requester.department else '-' }}</span>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('inventory.detail', item_id=req.item.id) }}" class="text-info text-decoration-none fw-medium">
+                                    {{ req.item.name }}
+                                </a>
+                                <span class="text-muted small d-block font-monospace">{{ req.item.sku }}</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="fw-bold">{{ req.quantity }}</span> 
+                                <span class="text-muted small">/</span> 
+                                <span class="small text-secondary">{{ req.item.quantity }}</span>
+                                {% if req.status == 'pending' and req.quantity > req.item.quantity %}
+                                    <div class="text-danger small mt-1" style="font-size: 0.75rem;">
+                                        <i class="bi bi-exclamation-circle-fill"></i> Yetersiz Stok
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if req.status == 'pending' %}
+                                    <span class="status-badge status-pending">
+                                        <span class="status-dot"></span>Onay Bekliyor
+                                    </span>
+                                {% elif req.status == 'approved' %}
+                                    <span class="status-badge status-approved">
+                                        <span class="status-dot"></span>Onaylandı
+                                    </span>
+                                {% elif req.status == 'delivered' %}
+                                    <span class="status-badge status-delivered">
+                                        <span class="status-dot"></span>Teslim Edildi
+                                    </span>
+                                {% else %}
+                                    <span class="status-badge status-rejected">
+                                        <span class="status-dot"></span>Reddedildi
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end pe-4">
+                                <div class="d-flex justify-content-end gap-2">
+                                    {% if req.status == 'pending' %}
+                                        <form method="POST" action="{{ url_for('requests.approve', req_id=req.id) }}">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <button type="submit" class="btn btn-sm btn-success">
+                                                <i class="bi bi-check-lg"></i> Onayla
+                                            </button>
+                                        </form>
+                                        <a href="{{ url_for('requests.reject', req_id=req.id) }}" class="btn btn-sm btn-danger">
+                                            <i class="bi bi-x-lg"></i> Reddet
+                                        </a>
+                                    {% elif req.status == 'approved' %}
+                                        <form method="POST" action="{{ url_for('requests.deliver', req_id=req.id) }}" onsubmit="return confirm('Malzemeyi fiziksel olarak teslim ettiniz mi? Bu işlem stoktan düşüm yapacaktır.');">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <button type="submit" class="btn btn-sm btn-primary">
+                                                <i class="bi bi-truck"></i> Teslim Et
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <span class="text-muted small">-</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            <i class="bi bi-inbox fs-1 mb-2 d-block"></i>
+                            Sistemde talep kaydı bulunmamaktadır.
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

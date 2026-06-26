@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="mb-4">
+    {% if item %}
+        <a href="{{ url_for('inventory.detail', item_id=item.id) }}" class="text-decoration-none text-muted">
+            <i class="bi bi-arrow-left me-1"></i> Malzeme Detayına Dön
+        </a>
+    {% else %}
+        <a href="{{ url_for('inventory.index') }}" class="text-decoration-none text-muted">
+            <i class="bi bi-arrow-left me-1"></i> Envantere Dön
+        </a>
+    {% endif %}
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="glass-card p-5">
+            <h2 class="brand-font mb-4 text-white">{{ title }}</h2>
+            
+            <form method="POST" action="">
+                {{ form.hidden_tag() }}
+                
+                <div class="mb-4">
+                    {{ form.name.label(class="form-label text-light") }}
+                    {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else ""), placeholder="Malzeme ismini girin") }}
+                    {% for error in form.name.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                
+                <div class="mb-4">
+                    {{ form.sku.label(class="form-label text-light") }}
+                    {{ form.sku(class="form-control" + (" is-invalid" if form.sku.errors else ""), placeholder="Stok kodunu girin (Örn: MON-24-PLAY)") }}
+                    {% for error in form.sku.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-4">
+                    {{ form.category_id.label(class="form-label text-light") }}
+                    {{ form.category_id(class="form-select" + (" is-invalid" if form.category_id.errors else "")) }}
+                    {% for error in form.category_id.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-6">
+                        {{ form.quantity.label(class="form-label text-light") }}
+                        {{ form.quantity(class="form-control" + (" is-invalid" if form.quantity.errors else ""), type="number") }}
+                        {% for error in form.quantity.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="col-6">
+                        {{ form.critical_level.label(class="form-label text-light") }}
+                        {{ form.critical_level(class="form-control" + (" is-invalid" if form.critical_level.errors else ""), type="number") }}
+                        {% for error in form.critical_level.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div class="d-grid mt-5">
+                    {{ form.submit(class="btn btn-primary btn-lg") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

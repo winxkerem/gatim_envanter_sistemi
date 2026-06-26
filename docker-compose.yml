@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: gatim_web_app
+    ports:
+      - "5000:5000"
+    environment:
+      - SECRET_KEY=gatim-docker-compose-secret-key-9988
+      - FLASK_DEBUG=True
+      - FLASK_RUN_PORT=5000
+    volumes:
+      - .:/workspace
+    restart: always

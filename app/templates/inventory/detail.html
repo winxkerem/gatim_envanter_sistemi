@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}{{ item.name }} Detayları{% endblock %}
+{% block content %}
+<div class="mb-4">
+    <a href="{{ url_for('inventory.index') }}" class="text-decoration-none text-muted">
+        <i class="bi bi-arrow-left me-1"></i> Listeye Geri Dön
+    </a>
+</div>
+
+<div class="row g-4">
+    <!-- Main Detail Panel -->
+    <div class="col-lg-8">
+        <div class="glass-card p-5 h-100">
+            <div class="d-flex justify-content-between align-items-start mb-4">
+                <div>
+                    <span class="badge bg-secondary bg-opacity-20 text-light border border-secondary mb-2">{{ item.category.name }}</span>
+                    <h1 class="brand-font mb-1">{{ item.name }}</h1>
+                    <p class="text-muted mb-0">Stok Kodu: <strong class="text-info font-monospace">{{ item.sku }}</strong></p>
+                </div>
+                <div>
+                    {% if item.is_critical %}
+                        <span class="badge bg-danger bg-opacity-15 text-danger border border-danger border-opacity-25 px-3 py-2">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i> Kritik Stok Seviyesi
+                        </span>
+                    {% else %}
+                        <span class="badge bg-success bg-opacity-15 text-success border border-success border-opacity-25 px-3 py-2">
+                            <i class="bi bi-check-circle-fill me-1"></i> Stok Yeterli
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <hr class="my-4 border-secondary opacity-25">
+
+            <h5 class="brand-font mb-3">Malzeme Özellikleri</h5>
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-4">
+                    <div class="bg-dark bg-opacity-40 rounded-3 p-3 text-center border border-secondary border-opacity-10">
+                        <span class="text-muted small d-block mb-1">Mevcut Miktar</span>
+                        <span class="fs-3 fw-bold text-white">{{ item.quantity }}</span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4">
+                    <div class="bg-dark bg-opacity-40 rounded-3 p-3 text-center border border-secondary border-opacity-10">
+                        <span class="text-muted small d-block mb-1">Kritik Stok Uyarısı</span>
+                        <span class="fs-3 fw-bold text-white">{{ item.critical_level }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-3 mt-5">
+                <!-- Request Form Action Link -->
+                <a href="{{ url_for('requests.create', item_id=item.id) }}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-file-earmark-plus me-1"></i> Malzeme Talep Et
+                </a>
+                
+                {% if current_user.role in ['admin', 'inventory_manager'] %}
+                    <a href="{{ url_for('inventory.edit', item_id=item.id) }}" class="btn btn-outline-warning btn-lg px-4">
+                        <i class="bi bi-pencil me-1"></i> Düzenle
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Sidebar Card -->
+    <div class="col-lg-4">
+        <div class="glass-card p-4 h-100">
+            <h5 class="brand-font mb-4 text-white">Talep İşlem Kuralları</h5>
+            
+            <ul class="list-unstyled mb-0">
+                <li class="d-flex align-items-start mb-4">
+                    <div class="bg-primary bg-opacity-20 rounded-circle p-2 me-3">
+                        <i class="bi bi-file-earmark-check text-primary"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-white mb-1">Talep Oluşturma</h6>
+                        <p class="text-muted small mb-0">İhtiyacınız olan adedi girerek talep oluşturun. Talep oluşturulduğunda 'pending' durumunda olacaktır.</p>
+                    </div>
+                </li>
+                <li class="d-flex align-items-start mb-4">
+                    <div class="bg-info bg-opacity-20 rounded-circle p-2 me-3">
+                        <i class="bi bi-shield-check text-info"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-white mb-1">Yönetici Onayı</h6>
+                        <p class="text-muted small mb-0">Talepler yetkili yöneticiler tarafından incelenerek onaylanır ('approved') veya reddedilir ('rejected').</p>
+                    </div>
+                </li>
+                <li class="d-flex align-items-start">
+                    <div class="bg-warning bg-opacity-20 rounded-circle p-2 me-3">
+                        <i class="bi bi-truck text-warning"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-white mb-1">Fiziksel Teslimat ve Stok Azaltımı</h6>
+                        <p class="text-muted small mb-0">Talepler onaylandığında stok azaltılmaz. Stoklar, malzeme size fiziksel olarak teslim edilip durum 'delivered' olduğunda eksilecektir.</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

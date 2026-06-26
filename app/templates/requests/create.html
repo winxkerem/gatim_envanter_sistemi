@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Talep Oluştur{% endblock %}
+{% block content %}
+<div class="mb-4">
+    <a href="{{ url_for('inventory.detail', item_id=item.id) }}" class="text-decoration-none text-muted">
+        <i class="bi bi-arrow-left me-1"></i> Malzeme Detayına Dön
+    </a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="glass-card p-5">
+            <span class="badge bg-secondary bg-opacity-20 text-light border border-secondary mb-2">{{ item.category.name }}</span>
+            <h2 class="brand-font mb-1 text-white">Malzeme Talep Et</h2>
+            <p class="text-info font-monospace mb-4">{{ item.sku }}</p>
+            
+            <div class="bg-dark bg-opacity-40 rounded-3 p-3 mb-4 border border-secondary border-opacity-10">
+                <div class="row text-center">
+                    <div class="col-6 border-end border-secondary border-opacity-20">
+                        <span class="text-muted small d-block mb-1">Mevcut Stok</span>
+                        <strong class="text-white">{{ item.quantity }} adet</strong>
+                    </div>
+                    <div class="col-6">
+                        <span class="text-muted small d-block mb-1">Durum</span>
+                        {% if item.is_critical %}
+                            <strong class="text-danger">Kritik Seviye</strong>
+                        {% else %}
+                            <strong class="text-success">Yeterli</strong>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <form method="POST" action="">
+                {{ form.hidden_tag() }}
+                
+                <div class="mb-4">
+                    {{ form.quantity.label(class="form-label text-light") }}
+                    {{ form.quantity(class="form-control" + (" is-invalid" if form.quantity.errors else ""), type="number", value="1", placeholder="Adet girin") }}
+                    {% for error in form.quantity.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                    <div class="form-text text-muted small mt-2">
+                        Talep edilen miktar mevcut stoktan fazla ise talep beklemede kalacak ancak oluşturulabilecektir.
+                    </div>
+                </div>
+                
+                <div class="d-grid mt-5">
+                    {{ form.submit(class="btn btn-primary btn-lg") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

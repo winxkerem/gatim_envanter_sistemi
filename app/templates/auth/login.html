@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Giriş Yap{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="glass-card p-5">
+            <h2 class="text-center mb-3 brand-font">Sisteme Giriş</h2>
+            <p class="text-center text-muted mb-4" style="font-size: 0.9rem;">{{ INSTITUTION_NAME }}</p>
+            
+            <form method="POST" action="">
+                {{ form.hidden_tag() }}
+                
+                <div class="mb-4">
+                    {{ form.username.label(class="form-label") }}
+                    {{ form.username(class="form-control" + (" is-invalid" if form.username.errors else ""), placeholder="Kullanıcı adınızı girin") }}
+                    {% for error in form.username.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                
+                <div class="mb-4">
+                    {{ form.password.label(class="form-label") }}
+                    {{ form.password(class="form-control" + (" is-invalid" if form.password.errors else ""), placeholder="Şifrenizi girin") }}
+                    {% for error in form.password.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                
+                <div class="d-grid mt-5">
+                    {{ form.submit(class="btn btn-primary btn-lg") }}
+                </div>
+            </form>
+            
+            <hr class="my-4 border-secondary">
+            
+            <div class="text-center">
+                <span class="text-muted">Hesabınız yok mu?</span>
+                <a href="{{ url_for('auth.register') }}" class="text-info ms-2 text-decoration-none">Kayıt Olun</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
